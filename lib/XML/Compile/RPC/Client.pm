@@ -22,11 +22,17 @@ XML::Compile::RPC::Client - XML-RPC based on unofficial schema
 
  # Call the server
  my ($rc, $answer) = $rpc->call($procedure, @param_pairs);
- $rc==0 or die "error: $response";
+ my ($rc, $answer) = $rpc->call($procedure, \%params);
+ $rc==0 or die "error: $answer ($rc)";
 
  # explict and autoload examples of the same.
- my ($rc, $answer) = $rpc->call('getQuote", symbol => 'IBM');
- my ($rc, $answer) = $rpc->getQuote(symbol => 'IBM');
+ my ($rc, $answer) = $rpc->call('getQuote", string => 'IBM');
+ my ($rc, $answer) = $rpc->getQuote(string => 'IBM');
+
+ # when param is a structure:
+ my $data = struct_from_hash string => symbol => 'IBM';
+ my ($rc, $answer) = $rpc->call('getQuote", $data);
+ my ($rc, $answer) = $rpc->getQuote($data);
 
  # Data::Dumper is your friend
  use Data::Dumper;
@@ -149,7 +155,7 @@ sub printTrace(;$)
     $fh->print("elapse:   $trace{total_elapse}\n");
 }
 
-=method call METHOD, PARAM-PAIRS
+=method call METHOD, PARAM-(HASH|PAIR)S
 
 =example
  my ($rc, $response) = $rpc->call('getQuote', string => 'IBM');
@@ -157,8 +163,18 @@ sub printTrace(;$)
      or die "error: $response\n";
  my $trace = $rpc->trace;  # facts about the last call
 
- # same call, via autoload
+ # same call, via autoload. One simple parameter
  my ($rc, $response) = $rpc->getQuote(string => 'IBM');
+
+ # function produces a HASH, one complex parameter
+ my $struct = struct_from_hash string => symbol => 'IBM';
+ my ($rc, $response) = $rpc->call('getQuote', $struct);
+ my ($rc, $response) = $rpc->getQuote($struct);
+
+ # or mixed simple and complex types
+ # Three parameters, of which two are complex structures.
+ my ($rc, $ans) = $rcp->someMethod($struct, int => 3, $struct2);
+
 =cut
 
 sub call($@)
@@ -192,8 +208,9 @@ sub _callmsg($@)
 
     my @params;
     while(@_)
-    {   my ($type, $value) = (shift, shift);
-        push @params, { value => { $type => $value }};
+    {   my $type  = shift;
+        my $value = UNIVERSAL::isa($type, 'HASH') ? $type : {$type => shift};
+        push @params, { value => $value };
     }
 
     my $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
