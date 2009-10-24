@@ -1,6 +1,9 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.12: Sat Oct 24 22:31:07 CEST 2009
+	- more documentation and doc-fixes.
+
 version 0.11: Sat Oct 24 21:11:42 CEST 2009
 	- documentation fixes
 	- more flexibility in the call parameters.

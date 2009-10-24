@@ -30,7 +30,7 @@ XML::Compile::RPC::Client - XML-RPC based on unofficial schema
  my ($rc, $answer) = $rpc->getQuote(string => 'IBM');
 
  # when param is a structure:
- my $data = struct_from_hash string => symbol => 'IBM';
+ my $data = struct_from_hash string => {symbol => 'IBM'};
  my ($rc, $answer) = $rpc->call('getQuote", $data);
  my ($rc, $answer) = $rpc->getQuote($data);
 
@@ -248,4 +248,51 @@ sub AUTOLOAD
 }
 
 sub DESTROY {}   # avoid DESTROY to AUTOLOAD
+
 1;
+
+__END__
+
+=chapter DETAILS
+
+=section Create an interface
+
+My advice: if you have to use XML-RPC, first create an abstraction
+layer like this:
+
+    package My::Service;
+    use base 'XML::Compile::RPC::Client';
+
+    sub getQuote($)
+    {   my ($self, $symbol) = @_;
+        my $params = struct_from_hash string => {symbol => $symbol};
+        my ($rc, $data) = $self->call(getQuote => $params);
+        $rc==0 or die "error: $data ($rc)";
+        # now simplify $data
+        $data;
+    }
+
+Now, the main program runs like this:
+
+   my $service = My::Service->new(destination => $uri);
+   my $price   = $service->getQuote('IBM');
+
+=section Comparison
+
+The XML::RPC module uses the XML::TreePP XML parser and parameter type
+guessing, where XML::Compile::RPC uses strict typed and validated XML
+via XML::LibXML: smaller chance on unexpected behavior. For instance,
+the XML::Compile::RPC client application will not produce incorrect
+messages when a string contains only digits. Besides, XML::RPC does not
+support all data types.
+
+XML::RPC::Fast is compatible with XML::RPC, but uses XML::LibXML which
+is faster and safer. It implements "manually" what M<XML::Compile> offers
+for free in XML::Compile::RPC. Getting the types of the parameters right
+is difficult for other things than strings and numbers.
+
+Finally, M<RPC::XML> makes you handle parameters as object: create a typed
+object for each passed value. It offers a standard method signatures to 
+simplify that task. On the other hand, M<RPC::XML> does offer more features.
+
+There are many ways to do it.

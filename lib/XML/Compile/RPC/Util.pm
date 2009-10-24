@@ -130,6 +130,8 @@ sub struct_from_rows(@)
 =function struct_from_hash TYPE, HASH
 Only usable when all key-value pairs are of the same type, usually C<string>.
 The keys are included alphabetically.
+=example
+  my $data = struct_from_hash int => { begin => 3, end => 5 };
 =cut
 
 sub struct_from_hash($$)
