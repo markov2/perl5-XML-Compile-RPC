@@ -184,6 +184,10 @@ sub rpcarray_from($@)
 In LIST context, it returns both the integer faultCode as the
 corresponding faultString.  In SCALAR context, only the code.
 
+When the faultCode is C<0>, the value of C<-1> will be returned.
+Some servers (like ExistDB 1.4RC) accidentally forget to set a
+good numeric value.
+
 =example
    if(my $f = $d->{fault})
    {    my ($rc, $rcmsg) = fault_code $f;
@@ -192,8 +196,9 @@ corresponding faultString.  In SCALAR context, only the code.
 =cut
 
 sub fault_code($)
-{   my $h = struct_to_hash shift->{value}{struct};
-    wantarray ? ($h->{faultCode}, $h->{faultString}) : $h->{faultCode};
+{   my $h  = struct_to_hash shift->{value}{struct};
+    my $fc = $h->{faultCode} || -1;
+    wantarray ? ($fc, $h->{faultString}) : $fc;
 }
 
 =function fault_from CODE, STRING

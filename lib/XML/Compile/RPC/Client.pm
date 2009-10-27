@@ -50,7 +50,7 @@ XML::Compile::RPC::Client - XML-RPC based on unofficial schema
  print $trace->{response}->as_string;
  print "$trace->{total_elapse}\n";
 
- # clean-up of connection depends on LWP
+ # clean-up of connections depends on LWP
  undef $rpc;
 
 =chapter DESCRIPTION
@@ -131,6 +131,15 @@ sub init($)
 
     $self;
 }
+
+=section Accessors
+
+=method headers
+Returns the internal M<HTTP::Headers>, which you may modify (for instance
+to change/set the Authentication field.
+=cut
+
+sub headers() {shift->{headers}}
 
 =section Handlers
 

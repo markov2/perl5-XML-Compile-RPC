@@ -1,6 +1,13 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.13: Tue Oct 27 17:01:34 CET 2009
+	- typo: value type Base64 -> base64
+	- add ::Client::headers() accessor to be able to manipulate
+	  the header under fly.
+	- return fault code -1, when the faultCode value is 0: to
+	  fail or not to fail, that's the question.
+
 version 0.12: Sat Oct 24 22:31:07 CEST 2009
 	- more documentation and doc-fixes.
 
