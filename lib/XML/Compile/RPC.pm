@@ -7,14 +7,19 @@ use base 'XML::Compile::Cache';
 use Log::Report 'xml-compile-rpc', syntax => 'SHORT';
 
 =chapter NAME
-XML::Compile::RPC - base-class for ::Client and ::Server
+XML::Compile::RPC - XML-RPC schema handler
 
 =chapter SYNOPSIS
  # you should initiate the ::Client
 
 =chapter DESCRIPTION
-This class implements commonalities between XML-RPC client and server
-implementations.  The server has not been implemented (yet).
+This class handles the XML-RPC pseudo schema for XML-RPC client or
+servers.  The server has not been implemented (yet).
+
+XML-RPC does not have an official schema, however with some craftsmanship,
+one has been produced.  It actually works quite well. Some types,
+especially the data type, needed some help to fit onto the schema type
+definitions.
 
 =chapter METHODS
 
@@ -43,6 +48,10 @@ sub init($)
 
     (my $xsd = __FILE__) =~ s,\.pm$,/xml-rpc.xsd,;
     $self->importDefinitions($xsd);
+
+    # only declared methods are accepted by the Cache
+    $self->declare(WRITER => 'methodCall');
+    $self->declare(READER => 'methodResponse');
 
     $self;
 }

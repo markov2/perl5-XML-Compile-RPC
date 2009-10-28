@@ -2,10 +2,11 @@ use warnings;
 use strict;
 
 package XML::Compile::RPC::Client;
-use base 'XML::Compile::RPC';
 
-use Log::Report 'xml-compile-rpc';
+use XML::Compile::RPC        ();
 use XML::Compile::RPC::Util  qw/fault_code/;
+
+use Log::Report              'xml-compile-rpc';
 use Time::HiRes              qw/gettimeofday tv_interval/;
 use HTTP::Request            ();
 use LWP::UserAgent           ();
@@ -102,12 +103,18 @@ key-value pairs, or an M<HTTP::Headers> OBJECT.
 When calls are made using the autoload mechanism, then you will encounter
 problems when the method names contain dashes. So, with this option, you
 can use underscores which will B<all> be replaced to STRING value specified.
+
+=option  schemas OBJECT
+=default schemas <created for you>
+When you need special additional trics with the schemas, you may pass
+your own M<XML::Compile::RPC> instance. However, by default this is
+created for you.
 =cut
+
+sub new(@) { my $class = shift; (bless {}, $class)->init({@_}) }
 
 sub init($)
 {   my ($self, $args) = @_;
-    $self->SUPER::init($args);
-
     $self->{user_agent}  = $args->{user_agent} || LWP::UserAgent->new;
     $self->{xmlformat}   = $args->{xmlformat}  || 0;
     $self->{auto_under}  = $args->{autoload_underscore_is};
@@ -124,11 +131,7 @@ sub init($)
         or $headers->content_type('text/xml');
 
     $self->{headers}     = $headers;
-
-    # only declared methods are accepted by the Cache
-    $self->declare(WRITER => 'methodCall');
-    $self->declare(READER => 'methodResponse');
-
+    $self->{schemas}     = $args->{schemas} ||= XML::Compile::RPC->new;
     $self;
 }
 
@@ -140,6 +143,12 @@ to change/set the Authentication field.
 =cut
 
 sub headers() {shift->{headers}}
+
+=method schemas
+Returns the internal M<XML::Compile::RPC> object.
+=cut
+
+sub schemas() {shift->{schemas}}
 
 =section Handlers
 
@@ -223,7 +232,7 @@ sub _callmsg($@)
     }
 
     my $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
-    my $xml = $self->writer('methodCall')->($doc
+    my $xml = $self->{schemas}->writer('methodCall')->($doc
       , { methodName => $method, params => { param => \@params }});
     $doc->setDocumentElement($xml);
     $doc;
@@ -233,14 +242,15 @@ sub _request($)
 {   my ($self, $doc) = @_;
     HTTP::Request->new
       ( POST => $self->{destination}
-      , $self->{header}
+      , $self->{headers}
       , $doc->toString($self->{xmlformat})
       );
 }
 
 sub _respmsg($)
 {   my ($self, $xml) = @_;
-    my $data = $self->reader('methodResponse')->($xml);
+    length $xml or return (1, "no xml received");
+    my $data = $self->{schemas}->reader('methodResponse')->($xml);
     return fault_code $data->{fault}
         if $data->{fault};
 

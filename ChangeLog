@@ -1,6 +1,10 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.14: Wed Oct 28 10:43:08 CET 2009
+	- make XML::Compile::RPC a helper of ::Client, instead of a ::Client
+	  derived from ::RPC.
+
 version 0.13: Tue Oct 27 17:01:34 CET 2009
 	- typo: value type Base64 -> base64
 	- add ::Client::headers() accessor to be able to manipulate
