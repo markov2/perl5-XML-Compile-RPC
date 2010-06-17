@@ -185,7 +185,7 @@ In LIST context, it returns both the integer faultCode as the
 corresponding faultString.  In SCALAR context, only the code.
 
 When the faultCode is C<0>, the value of C<-1> will be returned.
-Some servers (like ExistDB 1.4RC) accidentally forget to set a
+Some servers (like ExistDB 1.4) accidentally forget to set a
 good numeric value.
 
 =example

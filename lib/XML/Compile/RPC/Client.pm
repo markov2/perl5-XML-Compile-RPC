@@ -6,7 +6,7 @@ package XML::Compile::RPC::Client;
 use XML::Compile::RPC        ();
 use XML::Compile::RPC::Util  qw/fault_code/;
 
-use Log::Report              'xml-compile-rpc';
+use Log::Report              'xml-compile-rpc', syntax => 'LONG';
 use Time::HiRes              qw/gettimeofday tv_interval/;
 use HTTP::Request            ();
 use LWP::UserAgent           ();
@@ -100,9 +100,10 @@ key-value pairs, or an M<HTTP::Headers> OBJECT.
 
 =option  autoload_underscore_is STRING
 =default autoload_underscore_is '_'
-When calls are made using the autoload mechanism, then you will encounter
-problems when the method names contain dashes. So, with this option, you
-can use underscores which will B<all> be replaced to STRING value specified.
+When calls are made using the autoload mechanism you may encounter
+problems when the method names contain dashes (C<->). So, with this
+option, you can use underscores which will B<all> be replaced to STRING
+value specified.
 
 =option  schemas OBJECT
 =default schemas <created for you>
@@ -145,7 +146,8 @@ to change/set the Authentication field.
 sub headers() {shift->{headers}}
 
 =method schemas
-Returns the internal M<XML::Compile::RPC> object.
+Returns the internal M<XML::Compile::RPC> object, used to encode and
+decode the exchanged XML messages.
 =cut
 
 sub schemas() {shift->{schemas}}
@@ -175,7 +177,7 @@ sub printTrace(;$)
 
 =method call METHOD, PARAM-(HASH|PAIR)S
 
-=example
+=examples
  my ($rc, $response) = $rpc->call('getQuote', string => 'IBM');
  $rc == 0
      or die "error: $response\n";
@@ -277,41 +279,45 @@ __END__
 =section Create an interface
 
 My advice: if you have to use XML-RPC, first create an abstraction
-layer like this:
+layer. That layer should implement error handling and logging.
+Have a look at M<XML::eXistDB::Client> for an extended example.
 
-    package My::Service;
-    use base 'XML::Compile::RPC::Client';
+  package My::Service;
+  use base 'XML::Compile::RPC::Client';
 
-    sub getQuote($)
-    {   my ($self, $symbol) = @_;
-        my $params = struct_from_hash string => {symbol => $symbol};
-        my ($rc, $data) = $self->call(getQuote => $params);
-        $rc==0 or die "error: $data ($rc)";
-        # now simplify $data
-        $data;
-    }
+  sub getQuote($)
+  {   my ($self, $symbol) = @_;
+      my $params = struct_from_hash string => {symbol => $symbol};
+      my ($rc, $data) = $self->call(getQuote => $params);
+      $rc==0 or die "error: $data ($rc)";
+
+      # now simplify $data
+      $data;
+  }
 
 Now, the main program runs like this:
 
-   my $service = My::Service->new(destination => $uri);
-   my $price   = $service->getQuote('IBM');
+  my $service = My::Service->new(destination => $uri);
+  my $price   = $service->getQuote('IBM');
 
 =section Comparison
 
-The XML::RPC module uses the XML::TreePP XML parser and parameter type
+The M<XML::RPC> module uses the M<XML::TreePP> XML parser and parameter type
 guessing, where XML::Compile::RPC uses strict typed and validated XML
 via XML::LibXML: smaller chance on unexpected behavior. For instance,
 the XML::Compile::RPC client application will not produce incorrect
 messages when a string contains only digits. Besides, XML::RPC does not
 support all data types.
 
-XML::RPC::Fast is compatible with XML::RPC, but uses XML::LibXML which
-is faster and safer. It implements "manually" what M<XML::Compile> offers
-for free in XML::Compile::RPC. Getting the types of the parameters right
-is difficult for other things than strings and numbers.
+M<XML::RPC::Fast> is compatible with XML::RPC, but uses M<XML::LibXML>
+which is faster and safer. It implements "manually" what M<XML::Compile>
+offers for free in XML::Compile::RPC. Getting the types of the parameters
+right is difficult for other things than strings and numbers.
 
 Finally, M<RPC::XML> makes you handle parameters as object: create a typed
 object for each passed value. It offers a standard method signatures to 
 simplify that task. On the other hand, M<RPC::XML> does offer more features.
 
 There are many ways to do it.
+
+=cut

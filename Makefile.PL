@@ -4,12 +4,12 @@ use 5.008;
 
 WriteMakefile
  ( NAME	 	=> 'XML::Compile::RPC'
- , VERSION	=> '0.14'
+ , VERSION	=> '0.15'
  , PREREQ_PM    =>
    { XML::Compile              => 1.08
    , XML::Compile::Cache       => 0.92
    , XML::Compile::Tester      => 0.05
-   , Log::Report               => 0.25
+   , Log::Report               => 0.28
    , Time::HiRes               => 0
    , LWP::UserAgent            => 0
 

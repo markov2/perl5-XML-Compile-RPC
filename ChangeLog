@@ -1,6 +1,10 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.15: Thu Jun 17 12:14:54 CEST 2010
+	- documentation clean-ups.
+	- fix for change in Log::Report, now exporting trace() by default.
+
 version 0.14: Wed Oct 28 10:43:08 CET 2009
 	- make XML::Compile::RPC a helper of ::Client, instead of a ::Client
 	  derived from ::RPC.
