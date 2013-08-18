@@ -4,7 +4,7 @@ use 5.008;
 
 WriteMakefile
  ( NAME	 	=> 'XML::Compile::RPC'
- , VERSION	=> '0.15'
+ , VERSION	=> '0.16'
  , PREREQ_PM    =>
    { XML::Compile              => 1.08
    , XML::Compile::Cache       => 0.92
@@ -14,7 +14,6 @@ WriteMakefile
    , LWP::UserAgent            => 0
 
    , Test::More                => 0.54
-   , Test::Pod                 => '1.00'
    }
 
  , EXE_FILES    => []

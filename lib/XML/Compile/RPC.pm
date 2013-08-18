@@ -10,16 +10,41 @@ use Log::Report 'xml-compile-rpc', syntax => 'SHORT';
 XML::Compile::RPC - XML-RPC schema handler
 
 =chapter SYNOPSIS
+
+ # ******
  # you should initiate the ::Client
+ # this module contains the low-level XML implementation
+ # ******
 
 =chapter DESCRIPTION
 This class handles the XML-RPC pseudo schema for XML-RPC client or
-servers.  The server has not been implemented (yet).
+servers.  The server-side has not been implemented (yet).
 
 XML-RPC does not have an official schema, however with some craftsmanship,
 one has been produced.  It actually works quite well. Some types,
 especially the data type, needed some help to fit onto the schema type
 definitions.
+
+See F<http://www.xmlrpc.com/spec> and F<http://en.wikipedia.org/wiki/XML-RPC>
+
+Supported simple data types:
+
+  base64
+  boolean
+  dateTime.iso8601
+  double
+  i4
+  int
+  nil                [added with 0.16]
+  string
+
+To use any of these types, you use "typename => value".  For C<nil>, use
+"nil => {}".
+
+Supported data structures:
+
+  array
+  struct
 
 =chapter METHODS
 
@@ -52,15 +77,14 @@ sub init($)
     # only declared methods are accepted by the Cache
     $self->declare(WRITER => 'methodCall');
     $self->declare(READER => 'methodResponse');
-
     $self;
 }
 
 sub _rewrite_string($$$$$)
 {   my ($element, $reader, $path, $type, $replaced) = @_;
-#   use Carp; confess $element->childNodes;
+#   panic $element->childNodes;
 
-      grep( {$_->isa('XML::LibXML::Element')} $element->childNodes)
+      (grep $_->isa('XML::LibXML::Element'), $element->childNodes)
     ? $replaced->($element)
     : (value => {string => $element->textContent});
 }

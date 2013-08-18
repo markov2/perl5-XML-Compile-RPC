@@ -67,6 +67,7 @@ __EXPECT
  
 my @members = ( {name => 'symbol', value => {string => 'RHAT'}}
               , {name => 'limit', value => {double => 2.25}}
+              , {name => 'missing', value => {nil => {}}}
               , {name => 'expires', value =>
                    { 'dateTime.iso8601' => '2002-07-09T20:00:00Z' }} );
 
@@ -87,6 +88,10 @@ compare_xml($xml3, <<'__EXPECT');
             <member>
               <name>limit</name>
               <value><double>2.25</double></value>
+            </member>
+            <member>
+              <name>missing</name>
+              <value><nil/></value>
             </member>
             <member>
               <name>expires</name>

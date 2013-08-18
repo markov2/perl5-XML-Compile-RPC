@@ -1,6 +1,10 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.16: Sun Aug 18 13:34:51 CEST 2013
+	- add 'nil' fields, reported by [Caleb Cushing]
+	- move t/99pod.t to xt/ to remove dependency on Test::POD
+
 version 0.15: Thu Jun 17 12:14:54 CEST 2010
 	- documentation clean-ups.
 	- fix for change in Log::Report, now exporting trace() by default.

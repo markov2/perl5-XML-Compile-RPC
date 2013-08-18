@@ -103,12 +103,14 @@ value. Returned is a structure.
    print Dumper $d;
 
 prints:
+
    { struct => { member =>
       [ { name => 'symbol', value => {string => 'RHAT' }}
       , { name => 'limit', value => {double => 2.25} }
       ] }};
 
 which will become in XML
+
    <struct>
      <member>
        <name>symbol</name>
