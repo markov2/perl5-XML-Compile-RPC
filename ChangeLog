@@ -1,6 +1,10 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.17: Thu Sep 12 08:30:44 CEST 2013
+	- rpc "string" type, now from ASCIIstring to xsd:string
+	  [Caleb Cushing]
+
 version 0.16: Sun Aug 18 13:34:51 CEST 2013
 	- add 'nil' fields, reported by [Caleb Cushing]
 	- move t/99pod.t to xt/ to remove dependency on Test::POD

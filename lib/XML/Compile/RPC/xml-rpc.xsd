@@ -52,7 +52,7 @@
     <xsd:element name="i4"            type="LimitedIntType"/>
     <xsd:element name="int"           type="LimitedIntType"/>
     <xsd:element name="nil"           type="NilType"/>
-    <xsd:element name="string"        type="ASCIIString"/>
+    <xsd:element name="string"        type="xsd:string"/>
     <xsd:element name="struct"        type="StructType"/>
   </xsd:choice>
 </xsd:complexType>
