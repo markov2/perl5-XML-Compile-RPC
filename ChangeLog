@@ -1,6 +1,10 @@
 
 ======== version history for XML::Compile::RPC
 
+version 0.18:
+	Improvements:
+	- change documentation style
+
 version 0.17: Thu Sep 12 08:30:44 CEST 2013
 	- rpc "string" type, now from ASCIIstring to xsd:string
 	  [Caleb Cushing]

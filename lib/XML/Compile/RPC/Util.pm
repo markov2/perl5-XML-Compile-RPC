@@ -42,7 +42,7 @@ XML::Compile::RPC::Util - XML-RPC convenience functions
 
 =section Struct
 
-=function struct_to_hash STRUCT
+=function struct_to_hash $struct
 Returns a HASH containing the structure information. The order of the
 keys and type of the values is lost. When keys appear more than once,
 only the last one is kept.
@@ -66,7 +66,7 @@ sub struct_to_hash($)
     \%h;
 }
 
-=function struct_to_rows STRUCT
+=function struct_to_rows $struct
 Returns a LIST of all the members of the structure. Each element of the
 returned LIST is an ARRAY with contains three fields: member name,
 member type and member value.
@@ -93,8 +93,8 @@ sub struct_to_rows($)
     @r;
 }
 
-=function struct_from_rows ROW, ROW, ...
-Each ROW is an ARRAY which contains member name, member type, and member
+=function struct_from_rows $row, $row, ...
+Each $row is an ARRAY which contains member name, member type, and member
 value. Returned is a structure.
 
 =example
@@ -129,7 +129,7 @@ sub struct_from_rows(@)
    +{ struct => {member => \@members} };
 }
 
-=function struct_from_hash TYPE, HASH
+=function struct_from_hash $type, HASH
 Only usable when all key-value pairs are of the same type, usually C<string>.
 The keys are included alphabetically.
 =example
@@ -145,8 +145,8 @@ sub struct_from_hash($$)
 
 =section Array
 
-=function rpcarray_values RPC-ARRAY
-Remove all array information except the values fron an RPC-array structure.
+=function rpcarray_values ARRAY
+Remove all array information except the values from an rpc-ARRAY structure.
 Actually, only the type information is lost: the other components of the
 complex XML structure are overhead.
 
@@ -166,7 +166,7 @@ sub rpcarray_values($)
     @v;
 }
 
-=function rpcarray_from TYPE, LIST
+=function rpcarray_from $type, LIST
 Construct an rpc-array structure from a LIST of values. These values must
 all have the same type.
 
@@ -182,7 +182,7 @@ sub rpcarray_from($@)
 
 =section Faults
 
-=function fault_code DATA
+=function fault_code $data
 In LIST context, it returns both the integer faultCode as the
 corresponding faultString.  In SCALAR context, only the code.
 
@@ -204,7 +204,7 @@ sub fault_code($)
 }
 
 =function fault_from CODE, STRING
-Construct a fault structure from an error code and the related error STRING.
+Construct a fault structure from an error code and the related error $string.
 
 =example
    my $d = fault_from 42,'no answer';

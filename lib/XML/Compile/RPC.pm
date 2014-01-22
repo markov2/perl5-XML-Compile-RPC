@@ -50,7 +50,7 @@ Supported data structures:
 
 =section Constructors
 
-=c_method new OPTIONS
+=c_method new %options
 =option opts_rw      ARRAY-OF-PAIRS
 =option opts_readers ARRAY-OF-PAIRS
 =option opts_writers ARRAY-OF-PAIRS

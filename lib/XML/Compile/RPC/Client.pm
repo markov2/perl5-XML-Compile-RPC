@@ -77,7 +77,7 @@ syntax in the first. This simplifies your code.
 
 =section Constructors
 
-=c_method new OPTIONS
+=c_method new %options
 
 =requires destination URI
 The address of the XML-RPC server.
@@ -136,6 +136,7 @@ sub init($)
     $self;
 }
 
+#--------------
 =section Accessors
 
 =method headers
@@ -143,15 +144,15 @@ Returns the internal M<HTTP::Headers>, which you may modify (for instance
 to change/set the Authentication field.
 =cut
 
-sub headers() {shift->{headers}}
-
 =method schemas
 Returns the internal M<XML::Compile::RPC> object, used to encode and
 decode the exchanged XML messages.
 =cut
 
+sub headers() {shift->{headers}}
 sub schemas() {shift->{schemas}}
 
+#--------------
 =section Handlers
 
 =method trace
@@ -163,7 +164,7 @@ will add some more header lines to the request before it is sent.
 my %trace;
 sub trace() {\%trace}
 
-=method printTrace [FILEHANDLE]
+=method printTrace [$fh]
 Pretty print the trace, by default to STDERR.
 =cut
 
@@ -175,25 +176,26 @@ sub printTrace(;$)
     $fh->print("elapse:   $trace{total_elapse}\n");
 }
 
-=method call METHOD, PARAM-(HASH|PAIR)S
+=method call $method, <$param|%param>
+The call parameters are passed as PAIRS or HASH.
 
 =examples
- my ($rc, $response) = $rpc->call('getQuote', string => 'IBM');
- $rc == 0
-     or die "error: $response\n";
- my $trace = $rpc->trace;  # facts about the last call
+  my ($rc, $response) = $rpc->call('getQuote', string => 'IBM');
+  $rc == 0
+      or die "error: $response\n";
+  my $trace = $rpc->trace;  # facts about the last call
 
- # same call, via autoload. One simple parameter
- my ($rc, $response) = $rpc->getQuote(string => 'IBM');
+  # same call, via autoload. One simple parameter
+  my ($rc, $response) = $rpc->getQuote(string => 'IBM');
 
- # function produces a HASH, one complex parameter
- my $struct = struct_from_hash string => symbol => 'IBM';
- my ($rc, $response) = $rpc->call('getQuote', $struct);
- my ($rc, $response) = $rpc->getQuote($struct);
+  # function produces a HASH, one complex parameter
+  my $struct = struct_from_hash string => symbol => 'IBM';
+  my ($rc, $response) = $rpc->call('getQuote', $struct);
+  my ($rc, $response) = $rpc->getQuote($struct);
 
- # or mixed simple and complex types
- # Three parameters, of which two are complex structures.
- my ($rc, $ans) = $rcp->someMethod($struct, int => 3, $struct2);
+  # or mixed simple and complex types
+  # Three parameters, of which two are complex structures.
+  my ($rc, $ans) = $rcp->someMethod($struct, int => 3, $struct2);
 
 =cut
 
