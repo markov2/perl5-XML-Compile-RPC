@@ -161,68 +161,72 @@ the request and the response from the server. Be aware that C<LWP>
 will add some more header lines to the request before it is sent.
 =cut
 
-my %trace;
-sub trace() {\%trace}
+my $trace;
+sub trace() {$trace}
 
 =method printTrace [$fh]
 Pretty print the trace, by default to STDERR.
 =cut
 
 sub printTrace(;$)
-{   my $self = shift;
-    my $fh   = shift || \*STDERR;
-
-    $fh->print("response: ",$trace{response}->status_line, "\n");
-    $fh->print("elapse:   $trace{total_elapse}\n");
+{   my $self  = shift;
+    my $fh    = shift || \*STDERR;
+    my $trace = $self->trace;
+    $fh->print("response: ",$trace->{response}->status_line, "\n");
+    $fh->print("elapse:   $trace->{total_elapse}\n");
 }
 
 =method call $method, <$param|%param>
 The call parameters are passed as PAIRS or HASH.
 
 =examples
-  my ($rc, $response) = $rpc->call('getQuote', string => 'IBM');
+  my ($rc, $response, $trace) = $rpc->call('getQuote', string => 'IBM');
   $rc == 0
       or die "error: $response\n";
+
+  # If you did not catch trace on time
   my $trace = $rpc->trace;  # facts about the last call
 
-  # same call, via autoload. One simple parameter
-  my ($rc, $response) = $rpc->getQuote(string => 'IBM');
+  # same call, via autoload of 'getQuote'. One simple parameter
+  my ($rc, $resp, $trace) = $rpc->getQuote(string => 'IBM');
 
-  # function produces a HASH, one complex parameter
+  # function produces a HASH, example complex parameter
   my $struct = struct_from_hash string => symbol => 'IBM';
-  my ($rc, $response) = $rpc->call('getQuote', $struct);
-  my ($rc, $response) = $rpc->getQuote($struct);
+  my ($rc, $resp, $trace) = $rpc->call('getQuote', $struct);
+  my ($rc, $resp, $trace) = $rpc->getQuote($struct);
 
   # or mixed simple and complex types
   # Three parameters, of which two are complex structures.
-  my ($rc, $ans) = $rcp->someMethod($struct, int => 3, $struct2);
+  my ($rc, $resp, $t) = $rcp->someMethod($struct, int => 3, $struct2);
 
 =cut
 
 sub call($@)
 {   my $self    = shift;
     my $start   = [gettimeofday];
+
     my $request = $self->_request($self->_callmsg(@_));
     my $format  = [gettimeofday];
+
     my $response  = $self->{user_agent}->request($request);
     my $network = [gettimeofday];
     
-    %trace      =
-      ( request        => $request
+    $trace   =
+      { request        => $request
       , response       => $response
       , start_time     => ($start->[0] + $start->[1]*10e-6)
       , format_elapse  => tv_interval($start, $format)
       , network_elapse => tv_interval($format, $network)
-      );
+      };
 
    $response->is_success
-      or return ($response->code, $response->status_line);
+       or return ($response->code, $response->status_line, $trace);
 
    my ($rc, $decoded) = $self->_respmsg($response->decoded_content);
-   $trace{decode_elapse} = tv_interval $network;
-   $trace{total_elapse}  = tv_interval $start;
+   $trace->{decode_elapse} = tv_interval $network;
+   $trace->{total_elapse}  = tv_interval $start;
 
-   ($rc, $decoded);
+   ($rc, $decoded, $trace);
 }
 
 sub _callmsg($@)
@@ -254,6 +258,7 @@ sub _request($)
 sub _respmsg($)
 {   my ($self, $xml) = @_;
     length $xml or return (1, "no xml received");
+
     my $data = $self->{schemas}->reader('methodResponse')->($xml);
     return fault_code $data->{fault}
         if $data->{fault};
@@ -267,6 +272,7 @@ sub AUTOLOAD
     (my $proc = our $AUTOLOAD) =~ s/.*\:\://;
     $proc =~ s/_/$self->{auto_under}/g
         if defined $self->{auto_under};
+
     $self->call($proc, @_);
 }
 
@@ -290,11 +296,13 @@ Have a look at M<XML::eXistDB::Client> for an extended example.
   sub getQuote($)
   {   my ($self, $symbol) = @_;
       my $params = struct_from_hash string => {symbol => $symbol};
-      my ($rc, $data) = $self->call(getQuote => $params);
+      my ($rc, $data, $trace) = $self->call(getQuote => $params);
       $rc==0 or die "error: $data ($rc)";
 
       # now simplify $data
-      $data;
+      ...
+
+      return $data;
   }
 
 Now, the main program runs like this:
@@ -302,19 +310,19 @@ Now, the main program runs like this:
   my $service = My::Service->new(destination => $uri);
   my $price   = $service->getQuote('IBM');
 
-=section Comparison
+=section Comparison to other XML-RPC CPAN modules
 
 The M<XML::RPC> module uses the M<XML::TreePP> XML parser and parameter type
 guessing, where XML::Compile::RPC uses strict typed and validated XML
 via XML::LibXML: smaller chance on unexpected behavior. For instance,
 the XML::Compile::RPC client application will not produce incorrect
 messages when a string contains only digits. Besides, XML::RPC does not
-support all data types.
+support all "standard" data types.
 
 M<XML::RPC::Fast> is compatible with XML::RPC, but uses M<XML::LibXML>
 which is faster and safer. It implements "manually" what M<XML::Compile>
 offers for free in XML::Compile::RPC. Getting the types of the parameters
-right is difficult for other things than strings and numbers.
+right is not easy for other things than strings and numbers.
 
 Finally, M<RPC::XML> makes you handle parameters as object: create a typed
 object for each passed value. It offers a standard method signatures to 

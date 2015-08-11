@@ -4,6 +4,7 @@ Makefile.PL
 lib/XML/Compile/RPC.pm
 lib/XML/Compile/RPC/Client.pm
 lib/XML/Compile/RPC/Util.pm
+lib/XML/Compile/RPC/apache.xsd
 lib/XML/Compile/RPC/xml-rpc.xsd
 t/01use.t
 t/10create.t

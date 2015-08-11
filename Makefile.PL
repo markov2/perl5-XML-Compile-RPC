@@ -4,7 +4,7 @@ use 5.008;
 
 WriteMakefile
  ( NAME	 	=> 'XML::Compile::RPC'
- , VERSION	=> '0.18'
+ , VERSION	=> '0.19'
  , PREREQ_PM    =>
    { XML::Compile              => 1.08
    , XML::Compile::Cache       => 0.92
@@ -12,6 +12,8 @@ WriteMakefile
    , Log::Report               => 0.28
    , Time::HiRes               => 0
    , LWP::UserAgent            => 0
+   , File::Glob                => 0
+   , File::Basename            => 0
 
    , Test::More                => 0.54
    }
@@ -26,7 +28,7 @@ WriteMakefile
 sub MY::postamble { <<'__POSTAMBLE' }
 
 # for DIST
-EXTENDS		= ../XMLCompile:../XMLCache
+EXTENDS		= ../XMLCompile:../XMLCache:../ExistDB
 RAWDIR          = ../public_html/xml-compile-rpc/raw
 DISTDIR         = ../public_html/xml-compile-rpc/source
 LICENSE         = artistic
