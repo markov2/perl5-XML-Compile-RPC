@@ -4,7 +4,7 @@ use 5.010;
 
 WriteMakefile
  ( NAME	 	=> 'XML::Compile::RPC'
- , VERSION	=> '0.19'
+ , VERSION	=> '0.20'
  , PREREQ_PM    =>
    { XML::Compile              => 1.08
    , XML::Compile::Cache       => 0.92
