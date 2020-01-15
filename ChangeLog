@@ -2,7 +2,12 @@
 ======== version history for XML::Compile::RPC
 
 version 0.19:
+	Changes:
+	- require perl 5.10
+
+	Improvements:
 	- add support for apache types
+	- convert GitHub
 
 version 0.18: Sat Jul 25 23:53:12 CEST 2015
 

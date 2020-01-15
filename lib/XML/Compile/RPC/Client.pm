@@ -1,7 +1,11 @@
-use warnings;
-use strict;
+# This code is part of distribution XML-Compile-RPC.  Meta-POD processed
+# with OODoc into POD and HTML manual-pages.  See README.md
+# Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
 package XML::Compile::RPC::Client;
+
+use warnings;
+use strict;
 
 use XML::Compile::RPC        ();
 use XML::Compile::RPC::Util  qw/fault_code/;
@@ -14,7 +18,7 @@ use LWP::UserAgent           ();
 =chapter NAME
 XML::Compile::RPC::Client - XML-RPC based on unofficial schema
 
-=chapter SYNOPSYS
+=chapter SYNOPSIS
  my $rpc = XML::Compile::RPC::Client->new
    ( destination => $service_uri
    , xmlformat   => 1

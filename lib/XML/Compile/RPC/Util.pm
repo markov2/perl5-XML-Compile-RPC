@@ -1,8 +1,12 @@
-use warnings;
-use strict;
+# This code is part of distribution XML-Compile-RPC.  Meta-POD processed
+# with OODoc into POD and HTML manual-pages.  See README.md
+# Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
 package XML::Compile::RPC::Util;
 use base 'Exporter';
+
+use warnings;
+use strict;
 
 our @EXPORT = qw/
    struct_to_hash
@@ -20,7 +24,7 @@ our @EXPORT = qw/
 =chapter NAME
 XML::Compile::RPC::Util - XML-RPC convenience functions
 
-=chapter SYNOPSYS
+=chapter SYNOPSIS
  use XML::Compile::RPC::Util;
 
  my $h  = struct_to_hash $d->{struct};
@@ -125,7 +129,7 @@ which will become in XML
 =cut
 
 sub struct_from_rows(@)
-{   my @members = map { +{name => $_->[0], value => {$_->[1] => $_->[2]}}} @_;
+{   my @members = map +{name => $_->[0], value => {$_->[1] => $_->[2]}}, @_;
    +{ struct => {member => \@members} };
 }
 

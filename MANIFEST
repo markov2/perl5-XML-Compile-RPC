@@ -1,6 +1,7 @@
 ChangeLog
 MANIFEST
 Makefile.PL
+README.md
 lib/XML/Compile/RPC.pm
 lib/XML/Compile/RPC/Client.pm
 lib/XML/Compile/RPC/Util.pm
